@@ -134,3 +134,28 @@ The project includes comprehensive formatting preservation tests:
 - **Logging** - All operations log to both console and `ppt_translator.log`
 - **Mock Translation** - Use mock functions for testing without API calls
 - **Sample Files** - Test against `sample_pptx/renewable_energy_sample_translation.pptx` for validation
+
+## Known Issues and Improvements
+
+- **Text Translation Validation**:
+  - Sometimes no text is passed and the AI returns an error response
+  - Need to implement validation to avoid translating:
+    - Empty strings
+    - Full uppercase strings (Acronyms or single letters)
+
+## Translation Behavior Updates
+
+- Do not translate links. App now responds: "I'm sorry, but I cannot access external links or content. Please provide the text you would like me to translate, and I'll be happy to assist you."
+
+## Future Development Ideas
+
+- **Prompt Optimization**:
+  - Todo 3: Propose a way to compact the system input before the user clicks to launch
+    - Maybe add a 'compact prompt' button in GUI that runs an analysis with GPT 4.1 or o4 and minimize token usage
+
+## Known Formatting Issues
+
+- **Todo 5**: Detected issue with bold text formatting:
+  - Sometimes in bold words inside a run, spaces get lost
+  - Example: "ciao **sono** io" becomes "hello**This is**me"
+  - Requires investigation of run-level text preservation mechanism

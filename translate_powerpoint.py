@@ -15,7 +15,7 @@ import sys
 from typing import Optional, Callable
 from pptx import Presentation
 from formatting import FormattingManager
-from processors import ShapeProcessor, TextProcessor
+from processors import TextProcessor
 from processors.enhanced_shape_processor import EnhancedShapeProcessor
 from validation import FormatValidator, VisualComparator
 
@@ -59,25 +59,13 @@ Your assignment is to translate all text written in English (SOURCE_LANG) into I
 5. Provide **only** the translated text; add **no explanations or comments**.
 6. Use consistent terminology throughout.
 
-
 ### Example
-
 **Input**
-
-```
 Welcome to the
 final presentation.
-```
-
 **Output**
-
-```
 Benvenuti alla
 presentazione finale.
-```
-
----
-
 """
 
 exINSTRUCTIONS = """
@@ -132,7 +120,6 @@ class PowerPointTranslator:
         
         # Initialize components
         self.formatting_manager = FormattingManager()
-        self.shape_processor = ShapeProcessor(self.formatting_manager)
         self.enhanced_shape_processor = EnhancedShapeProcessor(self.formatting_manager)
         self.validator = FormatValidator(self.formatting_manager)
         

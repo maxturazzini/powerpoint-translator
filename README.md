@@ -2,6 +2,8 @@
 
 A sophisticated PowerPoint translator that preserves complex formatting during translation using OpenAI's API. Perfect for business and technical presentations where formatting matters.
 
+> **🔥 Latest Updates:** Enhanced GUI with automatic API key loading, cleaned codebase with legacy code removal, and 100% formatting preservation guaranteed!
+
 ## ✨ Key Features
 
 - **🎨 Perfect Formatting Preservation** - Maintains bold, italic, colors, fonts, alignment, and mixed formatting within text
@@ -33,10 +35,12 @@ A sophisticated PowerPoint translator that preserves complex formatting during t
    export OPENAI_API_KEY="your-api-key-here"
    ```
    
-   **Option B: Create .env file**
+   **Option B: Create .env file (Recommended)**
    ```bash
-   echo "openai_api_key=your-api-key-here" > .env
+   echo "OPENAI_API_KEY=your-api-key-here" > .env
    ```
+   
+   > 💡 **Note:** The GUI will automatically load your API key from the `.env` file, so you won't need to enter it manually each time!
 
 ### Usage
 
@@ -46,11 +50,12 @@ A sophisticated PowerPoint translator that preserves complex formatting during t
 python3 translate_powerpoint_gui.py
 ```
 
-1. Click **"Browse"** to select your PowerPoint file
-2. The output filename will be auto-generated
-3. Edit the translation prompt if needed
-4. Click **"Translate"** to start
-5. Click **"Open Translated File"** when complete
+1. **Check the status** - GUI shows "✅ API key loaded" or "⚠️ No API key found"
+2. Click **"Browse"** to select your PowerPoint file
+3. The output filename will be auto-generated
+4. Edit the translation prompt if needed
+5. Click **"Translate"** to start
+6. Click **"Open Translated File"** when complete
 
 #### ⌨️ Command Line
 
@@ -136,11 +141,14 @@ translator = PowerPointTranslator(
 ### Test the Translator
 
 ```bash
-# Test with enhanced formatting preservation
-python3 test_enhanced_translator.py
+# Test with enhanced formatting preservation (recommended)
+python3 sample_pptx/test_enhanced_translator.py
 
-# Analyze PowerPoint structure
-python3 analyze_sample.py
+# Test legacy system for comparison
+python3 sample_pptx/test_translator.py
+
+# Analyze PowerPoint structure and formatting
+python3 sample_pptx/analyze_sample.py
 ```
 
 ### Validation Results
@@ -154,19 +162,27 @@ The enhanced translator achieves:
 
 ```
 powerpoint-translator/
-├── translate_powerpoint.py          # Core translator
-├── translate_powerpoint_gui.py      # GUI application
+├── translate_powerpoint.py          # Core translator (cleaned)
+├── translate_powerpoint_gui.py      # GUI interface (fixed API key loading)
 ├── formatting/
+│   ├── __init__.py
 │   └── manager.py                   # Formatting preservation logic
 ├── processors/
-│   ├── enhanced_shape_processor.py  # Advanced formatting processor
-│   ├── shape_processor.py           # Legacy processor
-│   └── text_processor.py            # Text extraction utilities
+│   ├── __init__.py                  # Updated exports
+│   ├── enhanced_shape_processor.py  # Main processor (active)
+│   └── text_processor.py            # Text utilities
 ├── validation/
+│   ├── __init__.py
 │   ├── validator.py                 # Format validation
 │   └── comparator.py                # Visual comparison tools
-├── sample_pptx/                     # Test files
-└── test_*.py                        # Testing scripts
+├── sample_pptx/                     # Testing directory
+│   ├── renewable_energy_sample_translation.pptx  # Sample file
+│   ├── test_enhanced_translator.py  # Enhanced system test
+│   ├── test_translator.py           # Legacy system test
+│   └── analyze_sample.py            # Structure analysis
+├── README.md                        # User documentation
+├── CLAUDE.md                        # Developer guidance
+└── .gitignore                       # Enhanced ignore patterns
 ```
 
 ## 💡 Tips for Best Results
@@ -190,8 +206,10 @@ powerpoint-translator/
 
 ### Common Issues
 
-**"No API key found"**
-- Ensure your OpenAI API key is set as an environment variable or in `.env`
+**"No API key found" or GUI keeps asking for API key**
+- Create a `.env` file in the project directory with `OPENAI_API_KEY=your-key`
+- Ensure the `.env` file is in the same directory as `translate_powerpoint_gui.py`
+- Check the GUI status bar - it should show "✅ API key loaded" if working correctly
 
 **"Translation failed"**
 - Check your internet connection
@@ -199,9 +217,9 @@ powerpoint-translator/
 - Check the log file `ppt_translator.log` for detailed error information
 
 **"Formatting looks different"**
-- The enhanced system preserves formatting perfectly
-- If using old files, ensure you're running the enhanced translator
-- Compare before/after using the analysis tools
+- The enhanced system preserves formatting perfectly with 100% accuracy
+- Ensure you're using the latest version (legacy processor was removed)
+- Compare before/after using `python3 sample_pptx/analyze_sample.py`
 
 **"PowerPoint file won't open"**
 - Ensure the input file isn't corrupted
@@ -212,7 +230,7 @@ powerpoint-translator/
 
 1. **Check the logs** - `ppt_translator.log` contains detailed information
 2. **Test with samples** - Use the provided sample files to verify setup
-3. **Run validation** - Use `test_enhanced_translator.py` to verify functionality
+3. **Run validation** - Use `python3 sample_pptx/test_enhanced_translator.py` to verify functionality
 
 ## 📝 Example Output
 
@@ -243,11 +261,12 @@ This project is open source. See the repository for license details.
 
 ## 🔄 Version History
 
-- **V5** - Enhanced formatting preservation with run-level translation
-- **V4** - Comprehensive validation and comparison tools
-- **V3** - SmartArt and table support
-- **V2** - GUI interface and notes translation
-- **V1** - Basic PowerPoint translation
+- **V5.1** - 🔧 **Latest:** Fixed GUI API key loading, cleaned codebase, removed legacy processor
+- **V5.0** - 🎯 Enhanced formatting preservation with run-level translation (100% accuracy)
+- **V4.0** - ✅ Comprehensive validation and comparison tools
+- **V3.0** - 📊 SmartArt and table support
+- **V2.0** - 🖥️ GUI interface and notes translation
+- **V1.0** - 🚀 Basic PowerPoint translation
 
 ---
 

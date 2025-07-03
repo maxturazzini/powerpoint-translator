@@ -11,8 +11,20 @@ from translate_powerpoint import PowerPointTranslator, INSTRUCTIONS
 # Requires: pip install python-dotenv
 try:
     from dotenv import load_dotenv
-    load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env'))
-    ENV_API_KEY = os.getenv('openai_api_key')
+    # Look for .env in current directory first, then parent directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    env_paths = [
+        os.path.join(current_dir, '.env'),  # Current directory
+        os.path.join(os.path.dirname(current_dir), '.env')  # Parent directory
+    ]
+    
+    for env_path in env_paths:
+        if os.path.exists(env_path):
+            load_dotenv(env_path)
+            break
+    
+    # Try different possible environment variable names
+    ENV_API_KEY = os.getenv('openai_api_key') or os.getenv('OPENAI_API_KEY')
 except ImportError:
     ENV_API_KEY = None
 
@@ -57,6 +69,13 @@ class TranslatorGUI:
 
         # Status
         self.status_var = tk.StringVar()
+        
+        # Set initial status based on API key availability
+        if self.api_key and self.api_key.strip():
+            self.status_var.set("✅ API key loaded - Ready to translate")
+        else:
+            self.status_var.set("⚠️ No API key found - Will prompt during translation")
+            
         tk.Label(root, textvariable=self.status_var, fg="blue").pack(pady=(0,10))
 
     def browse_file(self):
@@ -76,9 +95,9 @@ class TranslatorGUI:
         if not input_path or not output_path:
             messagebox.showerror("Error", "Please select a PowerPoint file.")
             return
-        if not self.api_key:
+        if not self.api_key or not self.api_key.strip():
             self.api_key = self.ask_api_key()
-            if not self.api_key:
+            if not self.api_key or not self.api_key.strip():
                 return
         self.status_var.set("Translating... Please wait.")
         self.translate_btn.config(state=tk.DISABLED)

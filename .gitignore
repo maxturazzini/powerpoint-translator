@@ -60,8 +60,13 @@ api_keys.txt
 # PowerPoint files (temporary/output)
 *_Translated.pptx
 *_translated.pptx
-test_*.pptx
+test_*_output*.pptx
 temp_*.pptx
+
+# Python cache and runtime files
+__pycache__/
+*.pyc
+*.pyo
 
 # Backup files
 *.bak
