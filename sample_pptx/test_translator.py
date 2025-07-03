@@ -39,7 +39,7 @@ def test_translator():
         
         # Now analyze the output to see formatting preservation
         print("\n🔍 Analyzing output formatting...")
-        from analyze_sample import analyze_presentation
+        from sample_pptx.analyze_sample import analyze_presentation
         print("\n" + "="*60)
         print("ANALYZING OUTPUT FILE:")
         print("="*60)

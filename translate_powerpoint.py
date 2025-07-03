@@ -16,6 +16,7 @@ from typing import Optional, Callable
 from pptx import Presentation
 from formatting import FormattingManager
 from processors import ShapeProcessor, TextProcessor
+from processors.enhanced_shape_processor import EnhancedShapeProcessor
 from validation import FormatValidator, VisualComparator
 
 # Configure logging to both file and console
@@ -132,6 +133,7 @@ class PowerPointTranslator:
         # Initialize components
         self.formatting_manager = FormattingManager()
         self.shape_processor = ShapeProcessor(self.formatting_manager)
+        self.enhanced_shape_processor = EnhancedShapeProcessor(self.formatting_manager)
         self.validator = FormatValidator(self.formatting_manager)
         
     def translate_text(self, text: str) -> str:
@@ -221,8 +223,8 @@ class PowerPointTranslator:
                         if original_text:
                             logger.info(f"Found text to translate: {original_text}")
                     
-                    # Process shape (includes translation)
-                    self.shape_processor.process_shape(shape, translate)
+                    # Process shape with enhanced formatting preservation
+                    self.enhanced_shape_processor.process_shape(shape, translate)
                     
                     # Verify translation after processing
                     if hasattr(shape, 'text_frame'):
