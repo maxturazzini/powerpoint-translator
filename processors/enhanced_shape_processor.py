@@ -53,6 +53,11 @@ class EnhancedShapeProcessor:
         
         for text, context_id in content_list:
             if text.strip():
+                # Validate text before translation
+                if not self._should_translate_text(text):
+                    logger.info(f"SmartArt: Skipping '{text}' (validation failed)")
+                    continue
+                
                 logger.info(f"SmartArt text to translate: {text}")
                 
                 # Translate without format markers for better quality
@@ -108,10 +113,24 @@ class EnhancedShapeProcessor:
         for run_idx, run in enumerate(paragraph.runs):
             if run.text and run.text.strip():
                 original_text = run.text
-                # Translate the run's text directly
-                translated_text = translate_func(original_text)
                 
-                # Update the run's text while preserving all formatting
+                # Validate text before translation
+                if not self._should_translate_text(original_text):
+                    logger.info(f"  Run {run_idx + 1}: Skipping '{original_text}' (validation failed)")
+                    continue
+                
+                # Preserve whitespace patterns for proper spacing
+                leading_spaces = original_text[:len(original_text) - len(original_text.lstrip())]
+                trailing_spaces = original_text[len(original_text.rstrip()):]
+                core_text = original_text.strip()
+                
+                # Translate only the core text content
+                translated_core = translate_func(core_text)
+                
+                # Reconstruct with original spacing
+                translated_text = leading_spaces + translated_core + trailing_spaces
+                
+                # Update the run's text while preserving all formatting and spacing
                 run.text = translated_text
                 
                 logger.info(f"  Run {run_idx + 1}: '{original_text}' -> '{translated_text}'")
@@ -249,3 +268,38 @@ class EnhancedShapeProcessor:
                 text_frame.vertical_anchor = properties['vertical_anchor']
         except Exception as e:
             logger.warning(f"Error applying text frame properties: {str(e)}")
+    
+    def _should_translate_text(self, text: str) -> bool:
+        """
+        Validate if text should be translated.
+        Skips empty strings, pure whitespace, and uppercase acronyms.
+        """
+        # Remove leading/trailing whitespace for analysis
+        clean_text = text.strip()
+        
+        # Skip empty strings
+        if not clean_text:
+            return False
+        
+        # Skip pure whitespace
+        if text.isspace():
+            return False
+        
+        # Skip single characters (likely bullet points, numbers, etc.)
+        if len(clean_text) == 1:
+            return False
+        
+        # Skip uppercase acronyms/abbreviations (2+ characters, all uppercase, may contain numbers)
+        if len(clean_text) >= 2 and clean_text.isupper() and not clean_text.isdigit():
+            # Allow translation if it contains lowercase letters or common punctuation
+            if any(c.islower() for c in clean_text):
+                return True
+            # Skip pure uppercase text that looks like an acronym
+            return False
+        
+        # Skip pure numbers
+        if clean_text.isdigit():
+            return False
+        
+        # Allow translation for everything else
+        return True

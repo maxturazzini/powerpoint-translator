@@ -137,11 +137,14 @@ The project includes comprehensive formatting preservation tests:
 
 ## Known Issues and Improvements
 
-- **Text Translation Validation**:
-  - Sometimes no text is passed and the AI returns an error response
-  - Need to implement validation to avoid translating:
-    - Empty strings
-    - Full uppercase strings (Acronyms or single letters)
+- **Text Translation Validation**: ✅ **COMPLETED**
+  - ~~Sometimes no text is passed and the AI returns an error response~~
+  - ~~Need to implement validation to avoid translating:~~
+    - ~~Empty strings~~
+    - ~~Full uppercase strings (Acronyms or single letters)~~
+  - **Implementation**: Added `_should_translate_text()` method in `EnhancedShapeProcessor` that validates text before translation
+  - **Features**: Skips empty strings, whitespace, single characters, uppercase acronyms, and pure numbers
+  - **Location**: `processors/enhanced_shape_processor.py:259-292`
 
 ## Translation Behavior Updates
 
@@ -150,12 +153,20 @@ The project includes comprehensive formatting preservation tests:
 ## Future Development Ideas
 
 - **Prompt Optimization**:
-  - Todo 3: Propose a way to compact the system input before the user clicks to launch
+  - **Todo 3**: Propose a way to compact the system input before the user clicks to launch
     - Maybe add a 'compact prompt' button in GUI that runs an analysis with GPT 4.1 or o4 and minimize token usage
+    - **Status**: Pending implementation
 
 ## Known Formatting Issues
 
-- **Todo 5**: Detected issue with bold text formatting:
-  - Sometimes in bold words inside a run, spaces get lost
-  - Example: "ciao **sono** io" becomes "hello**This is**me"
-  - Requires investigation of run-level text preservation mechanism
+- **Todo 5**: Detected issue with bold text formatting: ✅ **COMPLETED**
+  - ~~Sometimes in bold words inside a run, spaces get lost~~
+  - ~~Example: "ciao **sono** io" becomes "hello**This is**me"~~
+  - ~~Requires investigation of run-level text preservation mechanism~~
+  - **Root Cause**: AI translation service doesn't preserve leading/trailing spaces in individual text runs
+  - **Solution**: Enhanced `_translate_paragraph_runs()` method to preserve whitespace patterns
+  - **Implementation**: Extract and preserve leading/trailing spaces, translate only core text, then reconstruct
+  - **Location**: `processors/enhanced_shape_processor.py:122-131`
+
+- **Todo 6**: Format is revert to standard fonts when no font is specified. Evaluate if this is a bug or a pptx file problem
+  - **Status**: Low priority, requires investigation
