@@ -38,7 +38,7 @@ def export_presentation_to_markdown(pptx_path: str):
                 continue
             if shape.is_placeholder and getattr(shape.placeholder_format, "type", None) in (
                 PP_PLACEHOLDER.BODY,
-                PP_PLACEHOLDER.CENTER_BODY,
+                PP_PLACEHOLDER.VERTICAL_BODY,
             ):
                 main_parts.append(text)
             all_texts.append(text)
@@ -136,14 +136,26 @@ class TranslatorGUI:
         tk.Label(root, textvariable=self.status_var, fg="blue").pack(pady=(0,10))
 
     def browse_file(self):
-        path = filedialog.askopenfilename(filetypes=[("PowerPoint files", "*.pptx")])
-        if path:
-            self.input_path_var.set(path)
-            base, ext = os.path.splitext(path)
-            dest = f"{base}_Translated{ext}"
-            self.output_path_var.set(dest)
-            self.translated_path = dest
-            self.open_btn.pack_forget()
+        # Ask user to choose between file or folder
+        choice = messagebox.askyesno("Selection Type", "Select 'Yes' for a single file or 'No' for a folder")
+        
+        if choice:  # Single file
+            path = filedialog.askopenfilename(filetypes=[("PowerPoint files", "*.pptx")])
+            if path:
+                self.input_path_var.set(path)
+                base, ext = os.path.splitext(path)
+                dest = f"{base}_Translated{ext}"
+                self.output_path_var.set(dest)
+                self.translated_path = dest
+                self.open_btn.pack_forget()
+        else:  # Folder
+            path = filedialog.askdirectory()
+            if path:
+                self.input_path_var.set(path)
+                dest = f"{path}_Translated"
+                self.output_path_var.set(dest)
+                self.translated_path = dest
+                self.open_btn.pack_forget()
 
     def start_translation(self):
         input_path = self.input_path_var.get()
@@ -228,10 +240,13 @@ class TranslatorGUI:
                 messagebox.showerror("Error", f"Failed to export {p}: {e}")
 
         if summary_lines:
-            with open("AllTheSlides.md", "w", encoding="utf-8") as f:
+            md_path = os.path.join(folder, "AllTheSlides.md")
+            
+            with open(md_path, "w", encoding="utf-8") as f:
                 for line in summary_lines:
                     f.write(line + "\n")
-        messagebox.showinfo("Done", "Markdown export completed")
+            console.print(f"Markdown file created: {md_path}")
+        messagebox.showinfo("Done", "Markdown export completed"
         self.status_var.set("Markdown export completed")
 
 def simple_input_dialog(parent, prompt):
