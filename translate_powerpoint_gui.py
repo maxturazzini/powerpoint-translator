@@ -5,7 +5,60 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext
 import threading
 import webbrowser
+import platform
+import subprocess
 from translate_powerpoint import PowerPointTranslator, INSTRUCTIONS
+from pptx import Presentation
+from pptx.enum.shapes import PP_PLACEHOLDER
+from processors.text_processor import TextProcessor
+
+
+def export_presentation_to_markdown(pptx_path: str):
+    """Export all slides of a presentation to a Markdown file."""
+    prs = Presentation(pptx_path)
+    md_lines = []
+    summary = []
+    for idx, slide in enumerate(prs.slides, 1):
+        md_lines.append(f"# Slide {idx}")
+
+        title = ""
+        if slide.shapes.title:
+            title = TextProcessor.get_text_frame_content(slide.shapes.title.text_frame)
+            md_lines.append(f"## {title}")
+        else:
+            md_lines.append("## ")
+
+        main_parts = []
+        all_texts = []
+        for shape in slide.shapes:
+            if not hasattr(shape, "text_frame"):
+                continue
+            text = TextProcessor.get_text_frame_content(shape.text_frame)
+            if not text.strip():
+                continue
+            if shape.is_placeholder and getattr(shape.placeholder_format, "type", None) in (
+                PP_PLACEHOLDER.BODY,
+                PP_PLACEHOLDER.CENTER_BODY,
+            ):
+                main_parts.append(text)
+            all_texts.append(text)
+
+        main_text = " ".join(main_parts)
+        md_lines.append(f"### {main_text}")
+        md_lines.append(f"#### {' '.join(all_texts)}")
+
+        if slide.has_notes_slide:
+            notes = TextProcessor.get_text_frame_content(slide.notes_slide.notes_text_frame)
+            md_lines.append(f"##### {notes}")
+
+        md_lines.append("")
+        summary.append(f"{os.path.basename(pptx_path)} | {idx} | {title} | {main_text}")
+
+    md_path = os.path.splitext(pptx_path)[0] + ".md"
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(md_lines))
+
+    return summary
 
 # Load OpenAI API key from .env using python-dotenv
 # Requires: pip install python-dotenv
@@ -66,6 +119,10 @@ class TranslatorGUI:
         self.open_btn = tk.Button(root, text="Open Translated File", command=self.open_translated_file)
         self.open_btn.pack(pady=(0,10))
         self.open_btn.pack_forget()
+
+        # Export to Markdown
+        self.export_btn = tk.Button(root, text="Export Slides to Markdown", command=self.export_slides)
+        self.export_btn.pack(pady=(0,10))
 
         # Status
         self.status_var = tk.StringVar()
@@ -132,10 +189,50 @@ class TranslatorGUI:
 
     def open_translated_file(self):
         if self.translated_path and os.path.exists(self.translated_path):
-            # Open the folder and select the file in Finder (macOS)
-            os.system(f'open -R "{self.translated_path}"')
+            system = platform.system()
+            path = os.path.abspath(self.translated_path)
+            if system == "Darwin":
+                subprocess.run(["open", "-R", path])
+            elif system == "Windows":
+                os.startfile(os.path.normpath(path))
+            else:
+                subprocess.run(["xdg-open", path])
         else:
             messagebox.showerror("Error", "Translated file not found.")
+
+    def export_slides(self):
+        """Export slides to Markdown from a file or folder."""
+        file_path = filedialog.askopenfilename(title="Select PowerPoint file", filetypes=[("PowerPoint files", "*.pptx")])
+        paths = []
+        if file_path:
+            paths = [file_path]
+        else:
+            folder = filedialog.askdirectory(title="Select folder containing PPTX files")
+            if not folder:
+                return
+            for name in os.listdir(folder):
+                if name.lower().endswith(".pptx"):
+                    paths.append(os.path.join(folder, name))
+
+        if not paths:
+            messagebox.showinfo("No files", "No PowerPoint files selected.")
+            return
+
+        summary_lines = []
+        for p in paths:
+            self.status_var.set(f"Exporting {os.path.basename(p)}")
+            self.root.update_idletasks()
+            try:
+                summary_lines.extend(export_presentation_to_markdown(p))
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to export {p}: {e}")
+
+        if summary_lines:
+            with open("AllTheSlides.md", "w", encoding="utf-8") as f:
+                for line in summary_lines:
+                    f.write(line + "\n")
+        messagebox.showinfo("Done", "Markdown export completed")
+        self.status_var.set("Markdown export completed")
 
 def simple_input_dialog(parent, prompt):
     dialog = tk.Toplevel(parent)
@@ -157,4 +254,4 @@ def simple_input_dialog(parent, prompt):
 if __name__ == "__main__":
     root = tk.Tk()
     app = TranslatorGUI(root)
-    root.mainloop() 
+    root.mainloop()

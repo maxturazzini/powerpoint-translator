@@ -12,6 +12,7 @@ A sophisticated PowerPoint translator that preserves complex formatting during t
 - **📊 Table Support** - Preserves table structure and cell formatting
 - **🎯 Smart Shape Handling** - Processes all PowerPoint shape types intelligently
 - **✅ Built-in Validation** - Comprehensive formatting verification and comparison tools
+- **📝 Markdown Export** - Save slide text to Markdown for easy review
 
 ## 🚀 Quick Start
 
@@ -25,7 +26,7 @@ A sophisticated PowerPoint translator that preserves complex formatting during t
 1. **Clone or download** this repository
 2. **Install required packages:**
    ```bash
-   pip install python-pptx openai python-dotenv
+   pip install -r requirements.txt
    ```
 
 3. **Set your OpenAI API key:**
@@ -257,7 +258,7 @@ With **perfect formatting preservation** - bold text stays bold, colors remain u
 
 ## 📄 License
 
-This project is open source. See the repository for license details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## 🔄 Version History
 
