@@ -273,7 +273,7 @@ def translate_ppt(
     input_path: str,
     output_path: str,
     api_key: str,
-    model: str = "gpt-4-0125-preview",
+    model: str = "gpt-4o-mini",
     translate_notes: bool = True,
     skip_hidden_slides: bool = True
 ) -> None:
