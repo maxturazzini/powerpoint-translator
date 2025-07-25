@@ -6,7 +6,8 @@
       "Bash(find:*)",
       "Bash(grep:*)",
       "Bash(rm:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "WebFetch(domain:python-docx.readthedocs.io)"
     ],
     "deny": []
   }

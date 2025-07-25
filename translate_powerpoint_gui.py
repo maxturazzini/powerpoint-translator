@@ -245,8 +245,8 @@ class TranslatorGUI:
             with open(md_path, "w", encoding="utf-8") as f:
                 for line in summary_lines:
                     f.write(line + "\n")
-            console.print(f"Markdown file created: {md_path}")
-        messagebox.showinfo("Done", "Markdown export completed"
+           # console.print(f"Markdown file created: {md_path}")
+        #messagebox.showinfo("Done", "Markdown export completed"
         self.status_var.set("Markdown export completed")
 
 def simple_input_dialog(parent, prompt):
